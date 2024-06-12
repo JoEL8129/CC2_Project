@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "Node.h"
+#include "Node_Null.h"
 
 class ofApp : public ofBaseApp {
 public:
@@ -16,8 +17,12 @@ public:
     void mouseReleased(int x, int y, int button);
     void mouseScrolled(int x, int y, float scrollX, float scrollY);
 
-    void frameAllNodes();
     
+    
+    void createNode(const string& nodeName);
+
+    void onNoteSelected();
+
 
 private:
 
@@ -28,39 +33,33 @@ private:
     vector<Node*> nodes;
 
     ofxPanel gui;
+    ofxPanel inspectorPanel;
+
     ofxButton addButton;
     ofxButton deleteButton;
     ofxButton connectButton;
 
     int debugValue;
 
+    float scaleFactor;
 
-
-
-    void createNode(const string& nodeName);
-
-
-
-    //void updateAutocompleteSuggestions();
-    //void createNode(const std::string& nodeType);
-
-
+    void frameAllNodes();
+    
     Node* selectedNode;
+
+    // Flags
     bool dragging;
     bool scrolling;  // Flag to indicate scrolling
     bool isConnecting;  // Flag to indicate if a connection is being dragged
 
     glm::vec2 prevMousePos;  // Previous mouse position for scrolling
-    glm::vec2 connectionStart;  // Store the start position of the connection
-
-
-    float scaleFactor;
     glm::vec2 selectedNodeOffset;
 
-
+    // Connector Stuff
     Connector* draggedConnector;
     glm::vec2 dragStart;
-
+    glm::vec2 connectionStart;  // Store the start position of the connection
     void tryCreateConnection(const glm::vec2& mousePos);
-    
+
+    void updateInspector();
 };

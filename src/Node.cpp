@@ -2,9 +2,13 @@
 
 Node::Node(string _name, glm::vec2 _position)
     : name(_name), position(_position), size(100,50),selSizeOffset(12,10), scaleFactor(1.0f){
+    setupParameters(); // Setup parameters in constructor
 }
 
 Node::~Node() {
+}
+
+void Node::setupParameters() {
 }
 
 void Node::draw() {
@@ -108,6 +112,9 @@ bool Node::connectTo(Node* targetNode, const string& outputName, const string& i
     return false;
 }
 
+bool Node::isMouseInside(const glm::vec2& mousePosition, float scaleFactor) {
+    return ofRectangle(position, size.x, size.y).inside(mousePosition.x / scaleFactor, mousePosition.y / scaleFactor);
+}
 
 Connector* Node::getConnectorAt(const glm::vec2& point) {
     for (auto& connector : inputConnectors) {
@@ -131,8 +138,9 @@ vector<Connector> Node::getOutputConnectors() {
     return outputConnectors;
 }
 
-NullNode::NullNode(string name, glm::vec2 position)
+/*NullNode::NullNode(string name, glm::vec2 position)
     : Node(name, position) {
+
     addInputConnector("Input 1", glm::vec2(0+position.x, 25 + position.y));
     addOutputConnector("Output 1", glm::vec2(100 + position.x, 25 + position.y));
-}
+}*/

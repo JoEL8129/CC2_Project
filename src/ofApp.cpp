@@ -2,6 +2,9 @@
 
 void ofApp::setup() {
     gui.setup();
+    inspectorPanel.setup("Inspector","abs",ofGetWidth() - 250, 20);
+
+   
     gui.add(addButton.setup("Add Node"));
     gui.add(deleteButton.setup("Delete Node"));
     gui.add(connectButton.setup("Connect Nodes"));
@@ -55,6 +58,7 @@ void ofApp::draw() {
     ofPopMatrix();
 
     gui.draw();
+    inspectorPanel.draw();
 }
 
 void ofApp::keyPressed(int key) {
@@ -64,15 +68,13 @@ void ofApp::keyPressed(int key) {
             delete* it;
             nodes.erase(it);
             selectedNode = nullptr;
+            updateInspector();
         }
     } else if (key == 'f' || key == 'F') {
         frameAllNodes();
     }
 
 }
-
-
-
 
 void ofApp::mousePressed(int x, int y, int button) {
     glm::vec2 mousePos(x, y);
@@ -98,8 +100,9 @@ void ofApp::mousePressed(int x, int y, int button) {
 
             glm::vec2 clickOffset = glm::vec2(x / scaleFactor, y / scaleFactor) - node->getPosition();
 
-            if (ofRectangle(node->getPosition(), 100, 50).inside(x / scaleFactor, y / scaleFactor)) {
+            if (node->isMouseInside(mousePos, scaleFactor)) {
                 selectedNode = node;
+                updateInspector();
                 dragging = true;
                 selectedNodeOffset = clickOffset;
                 break;
@@ -108,8 +111,6 @@ void ofApp::mousePressed(int x, int y, int button) {
     }
 
 }
-
-
 
 void ofApp::mouseReleased(int x, int y, int button) {
     
@@ -140,7 +141,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
     }
 
     if (scrolling) {
-        glm::vec2 currentMousePos(ofGetMouseX(), ofGetMouseY());
+        glm::vec2 currentMousePos(x, y);
         glm::vec2 diff = currentMousePos - prevMousePos;
 
         // Adjust for scaling
@@ -166,7 +167,6 @@ void ofApp::mouseScrolled(int x, int y, float scrollX, float scrollY) {
 
     scaleFactor = ofClamp(scaleFactor, 0.3f, 5.0f);  // Clamp the scale factor to avoid negative or too large values
 }
-
 
 void ofApp::frameAllNodes() {
     // Calculate centroid of all nodes
@@ -208,16 +208,28 @@ void ofApp::frameAllNodes() {
     scaleFactor = scaleFactorToFit;
 }
 
-
 void ofApp::createNode(const string& nodeName) {
-    if (nodeName == "NullNode") {
-        nodes.push_back(new NullNode("NullNode", glm::vec2(ofGetWidth() / 2, ofGetHeight() / 2)));
+    if (nodeName == "Null") {
+        nodes.push_back(new Node_Null("Null"+ofToString(nodes.size()), glm::vec2(ofGetWidth() / 2, ofGetHeight() / 2)));
+    }
+}
+
+// Inspector GUI
+
+void ofApp::updateInspector() {
+    inspectorPanel.clear(); // Clear existing GUI
+    inspectorPanel.setup("Inspector", "abs", ofGetWidth() - 250, 20);
+
+    if (selectedNode) {
+        inspectorPanel.add(selectedNode->getParameters()); // Add parameters of the selected node
     }
 }
 
 
+// Starter GUI 
 void ofApp::addButtonPressed() {
-    nodes.push_back(new NullNode("NullNode", glm::vec2(ofGetWidth() / 2, ofGetHeight() / 2)));
+    createNode("Null");
+    //nodes.push_back(new Node_Null("NullNode", glm::vec2(ofGetWidth() / 2, ofGetHeight() / 2)));
 }
 
 void ofApp::deleteButtonPressed() {

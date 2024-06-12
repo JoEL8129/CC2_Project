@@ -17,9 +17,17 @@ public:
     void draw();
     void drawSelected();
 
+    virtual void setupParameters(); // Setup parameters for the node
+    ofParameterGroup& getParameters() { return parameters; } // Access parameters
+
     void setPosition(const glm::vec2& position);
-    glm::vec2 getPosition() const;
     void setScale(float scale);
+
+    glm::vec2 getPosition() const;
+    Connector* getConnectorAt(const glm::vec2& point);
+    vector<Connector> getInputConnectors();
+    vector<Connector> getOutputConnectors();
+
 
     string getName() const;
     
@@ -27,10 +35,7 @@ public:
     void addOutputConnector(string name, glm::vec2 position);
 
     bool connectTo(Node* targetNode, const string& outputName, const string& inputName);
-    
-    Connector* getConnectorAt(const glm::vec2& point);
-    vector<Connector> getInputConnectors();
-    vector<Connector> getOutputConnectors();
+    bool isMouseInside(const glm::vec2& mousePosition, float scaleFactor);
 
 protected:
     string name;
@@ -43,13 +48,14 @@ protected:
     vector<Connector> outputConnectors;
     vector<Connection> connections;
 
+    ofParameterGroup parameters;
 
 };
 
-class NullNode : public Node {
+/*class NullNode : public Node {
 public:
     NullNode(string name, glm::vec2 position);
-};
+};*/
 
 
 
