@@ -25,9 +25,10 @@ void ofApp::setup() {
 
 }
 
-
-
 void ofApp::update() {
+
+ 
+
 
 }
 
@@ -40,36 +41,41 @@ void ofApp::draw() {
     ofPushMatrix();
     ofScale(scaleFactor, scaleFactor);  // Apply scaling
 
-
     if (isConnecting) {
         ofSetColor(255, 0, 255);  // Set color for the connection line
         ofDrawLine(connectionStart, glm::vec2(ofGetMouseX() / scaleFactor, ofGetMouseY() / scaleFactor));
     }
 
-
     if (selectedNode != nullptr) {
         selectedNode->drawSelected();
     }
+    
+   for (auto& node : nodes) {
+       node->draw();    
+   }
 
-   
-        for (auto& node : nodes) {
-            node->draw();    
-        }
-    ofPopMatrix();
+   for (auto& connection : connections) {
+       connection->draw();
+   }
+
+   ofPopMatrix();
 
     gui.draw();
     inspectorPanel.draw();
 }
 
 void ofApp::keyPressed(int key) {
-    if (key == OF_KEY_DEL && selectedNode) {
-        auto it = std::find(nodes.begin(), nodes.end(), selectedNode);
+    if (key == OF_KEY_DEL && selectedNode || key== OF_KEY_BACKSPACE && selectedNode) {
+
+        deleteNode(selectedNode);
+
+        /*auto it = std::find(nodes.begin(), nodes.end(), selectedNode);
         if (it != nodes.end()) {
             delete* it;
             nodes.erase(it);
             selectedNode = nullptr;
             updateInspector();
-        }
+        }*/
     } else if (key == 'f' || key == 'F') {
         frameAllNodes();
     }
@@ -214,7 +220,44 @@ void ofApp::createNode(const string& nodeName) {
     }
 }
 
-// Inspector GUI
+void ofApp::deleteNode(Node* _node) {
+
+    // Style 1 
+    /*
+    connections.erase(
+        std::remove_if(connections.begin(), connections.end(),
+            [_node](const Connection* connection) {
+                return connection->involvesNode(_node);
+            }),
+        connections.end()
+                );
+    */
+    // Style 2
+    // Remove and delete all connections involving this node
+    for (auto it = connections.begin(); it != connections.end();) {
+        if ((*it)->involvesNode(_node)) { //using '(*it)' instead of only '*it' because the arrow operator is computed before dereference operator, so '*it' would give wrong result 
+            delete* it; // Delete the connection object
+            it = connections.erase(it); // Erase the pointer from the vector
+        }
+        else {
+            ++it;
+        }
+    }
+
+    auto it = std::find(nodes.begin(), nodes.end(), _node);
+    if (it != nodes.end()) {
+        delete* it;
+        nodes.erase(it);
+    }
+
+    if (selectedNode == _node) {
+        selectedNode = nullptr;
+        updateInspector();
+    }
+    
+    
+
+}
 
 void ofApp::updateInspector() {
     inspectorPanel.clear(); // Clear existing GUI
@@ -225,7 +268,6 @@ void ofApp::updateInspector() {
     }
 }
 
-
 // Starter GUI 
 void ofApp::addButtonPressed() {
     createNode("Null");
@@ -233,14 +275,7 @@ void ofApp::addButtonPressed() {
 }
 
 void ofApp::deleteButtonPressed() {
-    if (selectedNode) {
-        auto it = std::find(nodes.begin(), nodes.end(), selectedNode);
-        if (it != nodes.end()) {
-            delete* it;
-            nodes.erase(it);
-            selectedNode = nullptr;
-        }
-    }
+
 }
 
 void ofApp::connectButtonPressed() {
@@ -254,16 +289,8 @@ void ofApp::tryCreateConnection(const glm::vec2& mousePos) {
             draggedConnector->getType() != targetConnector->getType() && 
             targetConnector->getType() != ConnectorType::Output
             ) {
-            debugValue += 5;
-            // Create connection if valid
-            Node* sourceNode = draggedConnector->getParentNode();
-            Node* targetNode = node;
-
-
-
-            if (sourceNode && targetNode) {
-                sourceNode->connectTo(targetNode, draggedConnector->getName(), targetConnector->getName());
-            }
+            debugValue += 5;              
+            connections.push_back(new Connection(targetConnector, draggedConnector));
         }
     }
 }

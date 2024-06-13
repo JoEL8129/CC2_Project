@@ -13,14 +13,11 @@ void Node::setupParameters() {
 
 void Node::draw() {
 
-    //ofPushMatrix();
-    //ofTranslate(position);
-    //ofScale(scaleFactor, scaleFactor);  // Apply scaling
-    //drawConnectors();
     ofSetColor(150);
     ofDrawRectRounded(position.x, position.y, size.x, size.y, 5);
     ofSetColor(0);
     ofDrawBitmapString(name, position.x+10, position.y+25);
+
     for (auto& connector : inputConnectors) {
         connector.draw();
     }
@@ -28,21 +25,11 @@ void Node::draw() {
         connector.draw();
     }
 
-    for (auto& connection : connections) {
-        connection.draw();
-    }
- 
-
-    //ofPopMatrix();
 }
 
 void Node::drawSelected() {
-    //ofPushMatrix();
-    //ofTranslate(position.x - selSizeOffset.x / 2, position.y - selSizeOffset.y / 2);
-    //ofScale(scaleFactor, scaleFactor);
     ofSetColor(0, 0, 175);
     ofDrawRectRounded(position.x - selSizeOffset.x / 2, position.y - selSizeOffset.y / 2, size.x + selSizeOffset.x, size.y + selSizeOffset.y, 6);
-    //ofPopMatrix();
 }
 
 
@@ -84,7 +71,7 @@ string Node::getName() const {
     return name;
 }
 
-bool Node::connectTo(Node* targetNode, const string& outputName, const string& inputName) {
+/*bool Node::connectTo(Node* targetNode, const string& outputName, const string& inputName) {
     Connector* outputConnector = nullptr;
     Connector* inputConnector = nullptr;
 
@@ -111,6 +98,7 @@ bool Node::connectTo(Node* targetNode, const string& outputName, const string& i
 
     return false;
 }
+*/
 
 bool Node::isMouseInside(const glm::vec2& mousePosition, float scaleFactor) {
     return ofRectangle(position, size.x, size.y).inside(mousePosition.x / scaleFactor, mousePosition.y / scaleFactor);

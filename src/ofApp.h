@@ -4,6 +4,9 @@
 #include "ofxGui.h"
 #include "Node.h"
 #include "Node_Null.h"
+#include "Connection.h"
+
+//class Connection;
 
 class ofApp : public ofBaseApp {
 public:
@@ -20,8 +23,9 @@ public:
     
     
     void createNode(const string& nodeName);
+    void deleteNode(Node* _node);
 
-    void onNoteSelected();
+    void nodeSelected(Node* selectedNode);
 
 
 private:
@@ -31,6 +35,8 @@ private:
     void connectButtonPressed(); // Add this declaration
 
     vector<Node*> nodes;
+    vector<Connection*> connections;
+
 
     ofxPanel gui;
     ofxPanel inspectorPanel;

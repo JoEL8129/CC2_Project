@@ -28,7 +28,7 @@ public:
 
     bool isPointInside(const glm::vec2& point) const;
     void setColor(glm::vec3& _color);
-    
+
 private:
     glm::vec3 color;
     string name;

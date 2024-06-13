@@ -3,10 +3,10 @@
 
 #include "ofMain.h"
 #include "Connector.h"
-#include "Connection.h"
+//#include "Connection.h"
 
 class Connector;
-class Connection;
+//class Connection;
 
 
 class Node {
@@ -34,7 +34,7 @@ public:
     void addInputConnector(string name, glm::vec2 position);
     void addOutputConnector(string name, glm::vec2 position);
 
-    bool connectTo(Node* targetNode, const string& outputName, const string& inputName);
+    //bool connectTo(Node* targetNode, const string& outputName, const string& inputName);
     bool isMouseInside(const glm::vec2& mousePosition, float scaleFactor);
 
 protected:
@@ -46,7 +46,7 @@ protected:
 
     vector<Connector> inputConnectors;
     vector<Connector> outputConnectors;
-    vector<Connection> connections;
+    //vector<Connection> connections;
 
     ofParameterGroup parameters;
 

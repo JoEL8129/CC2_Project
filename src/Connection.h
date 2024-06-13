@@ -8,14 +8,15 @@ class Connector;
 
 class Connection {
 public:
-    Connection(Connector* output, Connector* input);
+    Connection(Connector* _from, Connector* _to);
     virtual ~Connection();
 
-    void draw();
+    void draw() const;
+    bool involvesNode(Node* node) const;
 
 private:
-    Connector* outputConnector;
-    Connector* inputConnector;
+    Connector* from;
+    Connector* to;
 };
 
 #endif
