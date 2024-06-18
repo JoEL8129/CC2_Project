@@ -4,6 +4,8 @@
 #include "ofxGui.h"
 #include "Node.h"
 #include "Node_Null.h"
+#include "Node_Constant.h"
+
 #include "Connection.h"
 
 //class Connection;
@@ -22,7 +24,7 @@ public:
 
     
     
-    void createNode(const string& nodeName);
+    void createNode(const NodeType& _type);
     void deleteNode(Node* _node);
 
     void nodeSelected(Node* selectedNode);
@@ -37,9 +39,13 @@ private:
     vector<Node*> nodes;
     vector<Connection*> connections;
 
+    vector<NodeType> ExistingNodeTypes;
+    vector<ofxButton*> nodeCreationButtons;
+
 
     ofxPanel gui;
     ofxPanel inspectorPanel;
+    ofxPanel nodeCreationPanel; 
 
     ofxButton addButton;
     ofxButton deleteButton;
@@ -57,6 +63,8 @@ private:
     bool dragging;
     bool scrolling;  // Flag to indicate scrolling
     bool isConnecting;  // Flag to indicate if a connection is being dragged
+    bool isNodeCreationPanelVisible;
+
 
     glm::vec2 prevMousePos;  // Previous mouse position for scrolling
     glm::vec2 selectedNodeOffset;
@@ -68,4 +76,8 @@ private:
     void tryCreateConnection(const glm::vec2& mousePos);
 
     void updateInspector();
+    void createNodeCreationButtons();
+    void createNullNode();
+    void createConstantNode();
+
 };

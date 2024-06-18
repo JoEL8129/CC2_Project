@@ -71,6 +71,10 @@ string Node::getName() const {
     return name;
 }
 
+NodeType Node::getType() const{
+    return type;
+}
+
 /*bool Node::connectTo(Node* targetNode, const string& outputName, const string& inputName) {
     Connector* outputConnector = nullptr;
     Connector* inputConnector = nullptr;

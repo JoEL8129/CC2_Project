@@ -3,7 +3,7 @@
 void ofApp::setup() {
     gui.setup();
     inspectorPanel.setup("Inspector","abs",ofGetWidth() - 250, 20);
-
+    //nodeCreationPanel.setup();
    
     gui.add(addButton.setup("Add Node"));
     gui.add(deleteButton.setup("Delete Node"));
@@ -14,11 +14,16 @@ void ofApp::setup() {
     deleteButton.addListener(this, &ofApp::deleteButtonPressed);
     connectButton.addListener(this, &ofApp::connectButtonPressed);
 
+    ExistingNodeTypes = {NodeType::Null,NodeType::Constant};
+
+    //createNodeCreationButtons();
+
 
     selectedNode = nullptr;
     dragging = false;
-    scrolling = false;  // Initialize scrolling flag
+    scrolling = false;  
     isConnecting = false;
+    isNodeCreationPanelVisible = false;
 
     scaleFactor = 1.0f;
     debugValue = 0;
@@ -60,8 +65,11 @@ void ofApp::draw() {
 
    ofPopMatrix();
 
-    gui.draw();
+    //gui.draw();
     inspectorPanel.draw();
+    if (isNodeCreationPanelVisible) {
+        nodeCreationPanel.draw();
+    }
 }
 
 void ofApp::keyPressed(int key) {
@@ -78,6 +86,12 @@ void ofApp::keyPressed(int key) {
         }*/
     } else if (key == 'f' || key == 'F') {
         frameAllNodes();
+    }
+    else if (key == OF_KEY_TAB) {
+        nodeCreationPanel.setup("afaf","bfaf",ofGetMouseX(), ofGetMouseY());
+        createNodeCreationButtons();
+
+        isNodeCreationPanelVisible = !isNodeCreationPanelVisible;
     }
 
 }
@@ -112,6 +126,10 @@ void ofApp::mousePressed(int x, int y, int button) {
                 dragging = true;
                 selectedNodeOffset = clickOffset;
                 break;
+            }
+
+            if (isNodeCreationPanelVisible && ofRectangle(nodeCreationPanel.getPosition(),nodeCreationPanel.getWidth(),nodeCreationPanel.getHeight()).inside(x,y)==false ) {
+                isNodeCreationPanelVisible = false;
             }
         }
     }
@@ -214,9 +232,13 @@ void ofApp::frameAllNodes() {
     scaleFactor = scaleFactorToFit;
 }
 
-void ofApp::createNode(const string& nodeName) {
-    if (nodeName == "Null") {
-        nodes.push_back(new Node_Null("Null"+ofToString(nodes.size()), glm::vec2(ofGetWidth() / 2, ofGetHeight() / 2)));
+void ofApp::createNode(const NodeType& _type) {
+    if (_type == NodeType::Null) {
+        nodes.push_back(new Node_Null("Null" + ofToString(nodes.size()), glm::vec2(ofGetMouseX(), ofGetMouseY())));
+    }
+    else if (_type == NodeType::Constant) {
+        nodes.push_back(new Node_Constant("Constant" + ofToString(nodes.size()), glm::vec2(ofGetMouseX(), ofGetMouseY())));
+
     }
 }
 
@@ -259,6 +281,7 @@ void ofApp::deleteNode(Node* _node) {
 
 }
 
+
 void ofApp::updateInspector() {
     inspectorPanel.clear(); // Clear existing GUI
     inspectorPanel.setup("Inspector", "abs", ofGetWidth() - 250, 20);
@@ -270,7 +293,7 @@ void ofApp::updateInspector() {
 
 // Starter GUI 
 void ofApp::addButtonPressed() {
-    createNode("Null");
+    createNode(NodeType::Constant);
     //nodes.push_back(new Node_Null("NullNode", glm::vec2(ofGetWidth() / 2, ofGetHeight() / 2)));
 }
 
@@ -295,3 +318,38 @@ void ofApp::tryCreateConnection(const glm::vec2& mousePos) {
     }
 }
 
+void ofApp::createNodeCreationButtons() {
+    // Create buttons for each NodeType
+    for (const auto& type : ExistingNodeTypes) {
+        ofxButton* button = new ofxButton();
+
+        std::string buttonName;
+        switch (type) {
+        case NodeType::Null: buttonName = "Create Null Node"; break;
+        case NodeType::Constant: buttonName = "Create Constant Node"; break;
+        }
+
+        nodeCreationPanel.add(button->setup(buttonName));
+
+        switch (type) {
+        case NodeType::Null:
+            button ->addListener( this, &ofApp::createNullNode);
+            break;
+        case NodeType::Constant:
+            button->addListener(this, &ofApp::createConstantNode);
+            break;
+        }
+
+        nodeCreationButtons.push_back(button);
+    }
+}
+
+void ofApp::createNullNode() {
+    createNode(NodeType::Null);
+    isNodeCreationPanelVisible = false;
+}
+
+void ofApp::createConstantNode() {
+    createNode(NodeType::Constant);
+    isNodeCreationPanelVisible = false;
+}

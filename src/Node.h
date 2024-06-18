@@ -8,6 +8,10 @@
 class Connector;
 //class Connection;
 
+enum class NodeType {
+    Null,
+    Constant
+};
 
 class Node {
 public:
@@ -30,7 +34,8 @@ public:
 
 
     string getName() const;
-    
+    NodeType getType() const;
+
     void addInputConnector(string name, glm::vec2 position);
     void addOutputConnector(string name, glm::vec2 position);
 
@@ -39,6 +44,8 @@ public:
 
 protected:
     string name;
+    NodeType type;
+
     glm::vec2 position;
     glm::vec2 size;
     glm::vec2 selSizeOffset;
@@ -49,6 +56,7 @@ protected:
     //vector<Connection> connections;
 
     ofParameterGroup parameters;
+
 
 };
 
